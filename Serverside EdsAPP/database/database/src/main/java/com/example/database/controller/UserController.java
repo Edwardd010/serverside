@@ -37,7 +37,7 @@ public class UserController {
         }
         Long id = service.createUser(udto);
         udto.id = id;
-        // no idea what this is???????
+
         URI uri = URI.create(ServletUriComponentsBuilder
                 .fromCurrentRequest().path("/" + id).toUriString());
 
@@ -47,8 +47,6 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUser(@PathVariable Long id) {
         UserDTO udto = service.getUser(id);
-        System.out.println("hello world");
-        System.out.println("hello world");
         return ResponseEntity.ok(udto);
     }
 
