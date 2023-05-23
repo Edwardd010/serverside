@@ -2,6 +2,7 @@ package com.example.database.service;
 
 import com.example.database.dto.UserDTO;
 import com.example.database.exception.ResourceNotFoundException;
+import com.example.database.exception.UsernameExistsException;
 import com.example.database.model.User;
 import com.example.database.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -18,9 +19,18 @@ public class UserService {
         this.repos = repos;
     }
 
+    public void checkUserExists(String username) {
+        User user = repos.findByUsername(username);
+        if (user != null) {
+            throw new UsernameExistsException("Username already exists: " + username);
+        }
+    }
+
+
+
     public Long createUser(UserDTO udto){
 
-        // mapping
+            // mapping
         User u = new User();
         u.setUsername(udto.username);
         u.setPassword(udto.password);

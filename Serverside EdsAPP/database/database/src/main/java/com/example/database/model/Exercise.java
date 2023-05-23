@@ -3,14 +3,13 @@ package com.example.database.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "exercise")
+@Table(name = "exercises")
 public class Exercise {
 
-    @Id
-    @GeneratedValue
-    @Column(name = "id")
-    Long id;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     @Column(name = "exercise_name")
     private String exerciseName;
     @Column(name = "sets")
@@ -19,10 +18,26 @@ public class Exercise {
     private int reps;
     @Column(name = "weight")
     private int weight;
+
+    @Column(name = "workout_id")
+    private Long workoutId;
+
+    public Long getWorkoutId() {
+        return workoutId;
+    }
+
+    public void setWorkoutId(Long workoutId) {
+        this.workoutId = workoutId;
+    }
+
+
     public Long getId() {
         return id;
     }
 
+    public void setId(Long id){
+        this.id = id;
+    }
     public void setExerciseName(String exerciseName){
         this.exerciseName = exerciseName;
     }
@@ -48,8 +63,6 @@ public class Exercise {
     public int getWeight(){
         return weight;
     }
-
-
 
 
 }

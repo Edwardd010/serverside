@@ -18,8 +18,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 @RequestMapping("exercises")
@@ -33,7 +35,8 @@ public class ExerciseController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping()
-    public ResponseEntity<Object> exercise(@Valid @RequestBody ExerciseDTO edto, BindingResult br){
+    public ResponseEntity<Object> exercise(@Valid @RequestBody List<ExerciseDTO> exercises, BindingResult br){
+        System.out.println(br.hasFieldErrors());
         if (br.hasFieldErrors()) {
             StringBuilder sb = new StringBuilder();
             for (FieldError fe : br.getFieldErrors()) {
@@ -42,13 +45,16 @@ public class ExerciseController {
             }
             return new ResponseEntity<>(sb.toString(), HttpStatus.BAD_REQUEST);
         }
-        Long id = service.createExercise(edto);
-        edto.id = id;
 
-        URI uri = URI.create(ServletUriComponentsBuilder
-                .fromCurrentRequest().path("/" + id).toUriString());
 
-        return ResponseEntity.created(uri).body(edto);
+        Long commonId = service.generateWorkoutId();
+
+        for (ExerciseDTO exerciseDTO : exercises) {
+            exerciseDTO.setWorkoutId(commonId);
+            service.createExercise(exerciseDTO);
+        }
+
+        return ResponseEntity.ok(exercises);
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
@@ -69,6 +75,7 @@ public class ExerciseController {
         return ResponseEntity.ok(exercisesList);
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> removeExercise(@PathVariable Long id){
         service.delete(id);

@@ -24,7 +24,9 @@ public class AuthController {
     @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/login")
     public ResponseEntity<Object> authUser(@RequestBody LoginRequest loginReq){
+
         User validatedUser = service.validateUser(loginReq.getUsername(), loginReq.getPassword());
+
         if (validatedUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
         }

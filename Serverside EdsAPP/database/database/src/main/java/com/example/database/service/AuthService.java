@@ -1,5 +1,6 @@
 package com.example.database.service;
 import com.example.database.exception.ResourceNotFoundException;
+import com.example.database.exception.UsernameExistsException;
 import com.example.database.model.User;
 import com.example.database.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

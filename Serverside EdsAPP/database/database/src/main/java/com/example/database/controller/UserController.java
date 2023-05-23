@@ -1,5 +1,6 @@
 package com.example.database.controller;
 import com.example.database.dto.UserDTO;
+import com.example.database.exception.UsernameExistsException;
 import com.example.database.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -27,10 +28,16 @@ public class UserController {
     @PostMapping
     public ResponseEntity<Object> createUser(@Valid @RequestBody UserDTO udto, BindingResult br) {
 
+        try {
+            service.checkUserExists(udto.username);
+        } catch (UsernameExistsException ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Username is taken");
+        }
+
         if (br.hasFieldErrors()) {
             StringBuilder sb = new StringBuilder();
             for (FieldError fe : br.getFieldErrors()) {
-                sb.append(fe.getField() + ": ");
+                sb.append(Character.toUpperCase(fe.getField().charAt(0)) + fe.getField().substring(1) + " ");
                 sb.append(fe.getDefaultMessage() + "\n");
             }
             return new ResponseEntity<>(sb.toString(), HttpStatus.BAD_REQUEST);
@@ -44,12 +51,14 @@ public class UserController {
         return ResponseEntity.created(uri).body(udto);
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUser(@PathVariable Long id) {
         UserDTO udto = service.getUser(id);
         return ResponseEntity.ok(udto);
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping()
     public ResponseEntity<List<UserDTO>> getUsers() {
         Iterable<UserDTO> usersIterable = service.getUsers();
